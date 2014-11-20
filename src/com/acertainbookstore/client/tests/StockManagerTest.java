@@ -25,7 +25,7 @@ public class StockManagerTest {
 	private static final Integer TEST_ISBN = 30345650;
 	private static final Integer NUM_COPIES = 5;
 
-	private static boolean localTest = true;
+	private static boolean localTest = false;
 	private static StockManager storeManager;
 	private static BookStore client;
 
@@ -342,25 +342,26 @@ public class StockManagerTest {
 	@Test
 	public void testRemoveBooks() throws BookStoreException {
 		List<StockBook> booksAdded = new ArrayList<StockBook>();
-		booksAdded.add(getDefaultBook());
-
-		List<StockBook> booksInStoreList = storeManager.getBooks();
-		assertTrue(booksInStoreList.equals(booksAdded));
+		StockBook book1 = getDefaultBook();
+		booksAdded.add(book1);
 
 		Set<StockBook> booksToAdd = new HashSet<StockBook>();
-		booksToAdd.add(new ImmutableStockBook(TEST_ISBN + 1,
+		StockBook book2 = new ImmutableStockBook(TEST_ISBN + 1,
 				"The Art of Computer Programming", "Donald Knuth", (float) 300,
-				NUM_COPIES, 0, 0, 0, false));
-		booksToAdd.add(new ImmutableStockBook(TEST_ISBN + 2,
+				NUM_COPIES, 0, 0, 0, false);
+		booksToAdd.add(book2);
+		StockBook book3 = new ImmutableStockBook(TEST_ISBN + 2,
 				"The C Programming Language",
 				"Dennis Ritchie and Brian Kerninghan", (float) 50, NUM_COPIES,
-				0, 0, 0, false));
+				0, 0, 0, false);
+		booksToAdd.add(book3);
 
 		booksAdded.addAll(booksToAdd);
 
 		// Add books in bookstore
 		storeManager.addBooks(booksToAdd);
-		booksInStoreList = storeManager.getBooks();
+
+		List<StockBook> booksInStoreList = storeManager.getBooks();
 		assertTrue(booksInStoreList.containsAll(booksAdded)
 				&& booksInStoreList.size() == booksAdded.size());
 
@@ -368,16 +369,18 @@ public class StockManagerTest {
 		isbnSet.add(TEST_ISBN);
 		isbnSet.add(TEST_ISBN + 2);
 
-		// Remove books with testISBN
+		// Remove the two books
 		storeManager.removeBooks(isbnSet);
 
-		booksAdded.remove(1);
-		booksAdded.remove(0);
+		//Remove from the local list
+		booksAdded.remove(book1);
+		booksAdded.remove(book3);
 
-		// Check that testISBN was removed
+		// Check that the books were removed
 		booksInStoreList = storeManager.getBooks();
 		assertTrue(booksInStoreList.containsAll(booksAdded)
 				&& booksInStoreList.size() == booksAdded.size());
+
 	}
 
 	@Test
